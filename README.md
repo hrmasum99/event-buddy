@@ -4,8 +4,7 @@
 # 🎉 Event Buddy – Event Booking System
 
 A full-stack backend API built using **NestJS**, **PostgreSQL**, and **TypeORM** for managing event creation, booking, and user authentication.
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+
 
   <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
     <p align="center">
@@ -25,6 +24,54 @@ A full-stack backend API built using **NestJS**, **PostgreSQL**, and **TypeORM**
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
 ## Description
+
+Ensure you have the following installed:
+
+- **Node.js** >= 16.x
+- **PostgreSQL** >= 12
+- **npm** or **yarn**
+
+**Clone the Repository**
+
+git clone https://github.com/hrmasum99/event-buddy.git
+cd event-buddy
+
+## 📦 Install Required Packages
+
+npm install class-validator class-transformer
+npm install @nestjs/typeorm typeorm pg
+npm install @nestjs/config
+npm install @nestjs/jwt @nestjs/passport passport passport-jwt
+npm install -D @types/passport-jwt @types/express @types/multer
+npm i -D @types/multer
+
+4. ## ⚙️ Environment Configuration
+
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_USER=your_postgres_user
+DATABASE_PASSWORD=your_postgres_password
+DATABASE_NAME=eventbuddy
+
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRES_IN=15d
+
+🧱 Project Structure
+
+src/
+├── auth/
+│   ├── auth.controller.ts
+│   ├── auth.service.ts
+│   └── jwt/
+├── bookings/
+├── common/
+│   └── decorators, guards, enums
+├── config/
+├── events/
+├── users/
+├── main.ts
+└── app.module.ts
+uploads/
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
@@ -92,6 +139,31 @@ $ npm run test:cov
 - 📥 Upload and manage event images
 - 📊 Swagger API documentation
 
+## 📤 Uploads
+Uploaded images are saved in the uploads/ directory (ensure this folder exists and is writable).
+
+##✅ Roles
+Role    |	Permissions
+──────────────────────────────────────
+Admin   |	Create/Update/Delete Events
+User    |	Book/Cancel Event, View Events
+
+## 🔐 Authentication & Authorization
+- JWT-based login system
+- Role-based guards for Admin, User
+- Routes protected with @UseGuards(JwtAuthGuard, RolesGuard)
+
+## ⚠️ Notes
+- Use Swagger to test and explore all available endpoints.
+- Ensure synchronize: true is turned off in production and use migrations instead.
+- Bookings are restricted to available seats (1–4 seats max per user).
+- Admin-specific routes are protected by role-based guards.
+
+## 💡 Tips
+- Make sure PostgreSQL service is running.
+- Always validate your DTOs using class-validator.
+- Protect sensitive routes using JwtAuthGuard and RolesGuard.
+- Keep your .env secure.
   
 ## Deployment
 
