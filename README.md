@@ -58,7 +58,7 @@ JWT_EXPIRES_IN=15d
 
 🧱 Project Structure
 
-src/
+- src/
 ├── auth/
 │   ├── auth.controller.ts
 │   ├── auth.service.ts
@@ -71,7 +71,7 @@ src/
 ├── users/
 ├── main.ts
 └── app.module.ts
-uploads/
+- uploads/
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
