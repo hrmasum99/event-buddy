@@ -1,8 +1,9 @@
 <p align="center">
   🎉 Event Buddy – Event Booking System 🎉
 </p>
-A full-stack backend API built using **NestJS**, **PostgreSQL**, and **TypeORM** for managing event creation, booking, and user authentication.
-
+<p align="center">
+A full-stack backend API built using **NestJS**, **TypeScript**, **PostgreSQL**, and **TypeORM** for managing event creation, booking, and user authentication.
+</p>
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
