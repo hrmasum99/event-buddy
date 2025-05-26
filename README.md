@@ -1,7 +1,9 @@
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
+# 🎉 Event Buddy – Event Booking System
 
+A full-stack backend API built using **NestJS**, **PostgreSQL**, and **TypeORM** for managing event creation, booking, and user authentication.
 [circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
 [circleci-url]: https://circleci.com/gh/nestjs/nest
 
@@ -57,7 +59,40 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
+## 🚀 Tech Stack
 
+- **NestJS** – Progressive Node.js framework
+- **PostgreSQL** – Relational database
+- **TypeORM** – ORM for TypeScript
+- **JWT** – Authentication and authorization
+- **Swagger** – API documentation
+- **Class Validator** – Input validation
+- **ConfigModule** – Environment variable support
+
+## 📤 Sample API Endpoints
+
+#### Get all items
+
+| Method | Route                           | Description               |
+| ------ | ------------------------------- | ------------------------- |
+| POST   | `/auth/register`                | Register new user         |
+| POST   | `/auth/login`                   | Login and receive JWT     |
+| POST   | `/bookings/new-booking/:id`     | Book seats for an event   |
+| DELETE | `/bookings/cancel-booking/:id`  | Cancel a booking          |
+| GET    | `/events`                       | List all events           |
+| GET    | `/events/:id`                   | Get event by ID           |
+| GET    | `/bookings/available-seats/:id` | Get available seats count |
+
+## 📦 Features
+
+- 🔐 JWT-based authentication and role-based authorization (`User`, `Admin`)
+- 🧑 User registration and login
+- 🎫 Event creation and listing (Admin)
+- 📅 Booking system for events (User)
+- 📥 Upload and manage event images
+- 📊 Swagger API documentation
+
+  
 ## Deployment
 
 When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
@@ -90,10 +125,21 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 
 ## Stay in touch
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+👤 Author
 
-## License
+Developed by Habibur Rahman Masum
+- [@hrmasum99](https://www.github.com/hrmasum99)
 
+---
+Let me know if you'd like me to:
+
+- generate a Swagger JSON file,
+- add a Docker setup for PostgreSQL,
+- or create `.env.example` for sharing env template.
+
+Ready to publish on GitHub with confidence! ✅
+
+## 📄 License
+
+This project is licensed under the MIT License.
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
