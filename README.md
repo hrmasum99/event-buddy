@@ -38,12 +38,14 @@ cd event-buddy
 
 ## 📦 Install Required Packages
 
+```bash
 - npm install class-validator class-transformer
 - npm install @nestjs/typeorm typeorm pg
 - npm install @nestjs/config
 - npm install @nestjs/jwt @nestjs/passport passport passport-jwt
 - npm install -D @types/passport-jwt @types/express @types/multer
 - npm i -D @types/multer
+```
 
 4. ## ⚙️ Environment Configuration
 
@@ -55,23 +57,6 @@ cd event-buddy
 
 JWT_SECRET=your_jwt_secret
 JWT_EXPIRES_IN=15d
-
-🧱 Project Structure
-
-- src/
-├── auth/
-│   ├── auth.controller.ts
-│   ├── auth.service.ts
-│   └── jwt/
-├── bookings/
-├── common/
-│   └── decorators, guards, enums
-├── config/
-├── events/
-├── users/
-├── main.ts
-└── app.module.ts
-- uploads/
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
