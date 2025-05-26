@@ -38,20 +38,20 @@ cd event-buddy
 
 ## 📦 Install Required Packages
 
-npm install class-validator class-transformer
-npm install @nestjs/typeorm typeorm pg
-npm install @nestjs/config
-npm install @nestjs/jwt @nestjs/passport passport passport-jwt
-npm install -D @types/passport-jwt @types/express @types/multer
-npm i -D @types/multer
+- npm install class-validator class-transformer
+- npm install @nestjs/typeorm typeorm pg
+- npm install @nestjs/config
+- npm install @nestjs/jwt @nestjs/passport passport passport-jwt
+- npm install -D @types/passport-jwt @types/express @types/multer
+- npm i -D @types/multer
 
 4. ## ⚙️ Environment Configuration
 
-DATABASE_HOST=localhost
-DATABASE_PORT=5432
-DATABASE_USER=your_postgres_user
-DATABASE_PASSWORD=your_postgres_password
-DATABASE_NAME=eventbuddy
+- DATABASE_HOST=localhost
+- DATABASE_PORT=5432
+- DATABASE_USER=your_postgres_user
+- DATABASE_PASSWORD=your_postgres_password
+- DATABASE_NAME=eventbuddy
 
 JWT_SECRET=your_jwt_secret
 JWT_EXPIRES_IN=15d
