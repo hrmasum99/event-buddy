@@ -51,12 +51,12 @@ $ npm install
 ## 📦 Install Required Packages
 
 ```bash
-- npm install class-validator class-transformer
-- npm install @nestjs/typeorm typeorm pg
-- npm install @nestjs/config
-- npm install @nestjs/jwt @nestjs/passport passport passport-jwt
-- npm install -D @types/passport-jwt @types/express @types/multer
-- npm i -D @types/multer
+$ npm install class-validator class-transformer
+$ npm install @nestjs/typeorm typeorm pg
+$ npm install @nestjs/config
+$ npm install @nestjs/jwt @nestjs/passport passport passport-jwt
+$ npm install -D @types/passport-jwt @types/express @types/multer
+$ npm i -D @types/multer
 ```
 
 4. ## ⚙️ Environment Configuration
