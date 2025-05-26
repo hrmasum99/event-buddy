@@ -1,10 +1,11 @@
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+  🎉 Event Buddy – Event Booking System 🎉
 </p>
-# 🎉 Event Buddy – Event Booking System
-
 A full-stack backend API built using **NestJS**, **PostgreSQL**, and **TypeORM** for managing event creation, booking, and user authentication.
 
+<p align="center">
+  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+</p>
 
   <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
     <p align="center">
@@ -27,14 +28,24 @@ A full-stack backend API built using **NestJS**, **PostgreSQL**, and **TypeORM**
 
 Ensure you have the following installed:
 
-- **Node.js** >= 16.x
-- **PostgreSQL** >= 12
+- **Node.js** 
+- **PostgreSQL** 
 - **npm** or **yarn**
+
+
+
+[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
 **Clone the Repository**
 
 git clone https://github.com/hrmasum99/event-buddy.git
 cd event-buddy
+
+## Project setup
+
+```bash
+$ npm install
+```
 
 ## 📦 Install Required Packages
 
@@ -57,15 +68,6 @@ cd event-buddy
 
 JWT_SECRET=your_jwt_secret
 JWT_EXPIRES_IN=15d
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
-
-```bash
-$ npm install
-```
-
 ## Compile and run the project
 
 ```bash
