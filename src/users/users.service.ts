@@ -14,9 +14,13 @@ export class UsersService {
     private readonly userRepo: Repository<User>,
   ) {}
 
+  async findAll(): Promise<UserResponseDTO[]> {
+    return this.userRepo.find();
+  }
+
   async findById(userId: number): Promise<UserResponseDTO> {
     return await this.userRepo.findOne({
-      where: { id:userId }
+      where: { id: userId },
     });
   }
 
@@ -37,7 +41,6 @@ export class UsersService {
   }
 
   async findByCredentials(loginDto: LoginDTO): Promise<RegisterDTO> {
-    return this.userRepo.findOne({ where: { email:loginDto.email } });
+    return this.userRepo.findOne({ where: { email: loginDto.email } });
   }
-  
 }
