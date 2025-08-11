@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class EventResponseDTO {
   @ApiProperty({ example: 1 })
@@ -7,7 +7,9 @@ export class EventResponseDTO {
   @ApiProperty({ example: 'Tech Conference 2025' })
   title: string;
 
-  @ApiProperty({ example: 'An annual tech event with top speakers and workshops.' })
+  @ApiProperty({
+    example: 'An annual tech event with top speakers and workshops.',
+  })
   description: string;
 
   @ApiProperty({ example: '2025-10-01T14:00:00Z' })
@@ -22,6 +24,13 @@ export class EventResponseDTO {
   @ApiProperty({ example: 'Tech, Startup, Innovation' })
   tags: string;
 
-  @ApiProperty({ example: '1694352486event.png' })
-  file: string;
+  // @ApiProperty({ example: '1694352486event.png' })
+  // file: string;
+
+  @ApiProperty({ example: '' })
+  imageUrl: string;
+
+  // Store Cloudinary public_id for deletion/updates
+  @ApiProperty({ example: '' })
+  imagePublicId: string;
 }

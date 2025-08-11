@@ -7,10 +7,14 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { EventsModule } from './events/events.module';
 import { BookingsModule } from './bookings/bookings.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DBHOST,
@@ -28,6 +32,7 @@ import { BookingsModule } from './bookings/bookings.module';
     UsersModule,
     EventsModule,
     BookingsModule,
+    CloudinaryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

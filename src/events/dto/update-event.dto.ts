@@ -1,5 +1,11 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateEventDTO {
   @ApiPropertyOptional({ example: 'New Event Title' })
@@ -35,11 +41,13 @@ export class UpdateEventDTO {
   @IsString({ message: 'Tags must be a comma-separated string' })
   @IsNotEmpty({ message: 'Tags are required' })
   tags?: string;
-
 }
 
 export class UploadImageDTO {
-  @ApiProperty({ example: 'event-image.png', description: 'Uploaded image filename' })
-  file: string;
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    description: 'Image file to upload',
+  })
+  image: Express.Multer.File;
 }
-
