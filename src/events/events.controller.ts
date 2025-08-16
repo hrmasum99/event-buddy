@@ -97,14 +97,14 @@ export class EventsController {
     return this.eventsService.getMyEvents(user.id);
   }
 
-  @Get('/test-cloudinary')
-  @ApiOperation({ summary: 'Test Cloudinary connection' })
-  async testCloudinary() {
-    try {
-      const result = await this.eventsService.testCloudinaryConnection();
-      return { success: true, cloudName: result };
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
-  }
+  // @Get('test-cloudinary')
+  // @ApiOperation({ summary: 'Test Cloudinary connection' })
+  // async testCloudinary() {
+  //   try {
+  //     const result = await this.eventsService.testCloudinaryConnection();
+  //     return { success: true, cloudName: result };
+  //   } catch (error) {
+  //     return { success: false, error: error.message };
+  //   }
+  // }
 }

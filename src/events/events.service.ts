@@ -15,7 +15,8 @@ import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 export class EventsService {
   constructor(
     @InjectRepository(EventEntity)
-    private readonly eventsRepo: Repository<EventResponseDTO>,
+    // private readonly eventsRepo: Repository<EventResponseDTO>,
+    private readonly eventsRepo: Repository<EventEntity>,
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
@@ -86,24 +87,16 @@ export class EventsService {
   async uploadEventImage(
     id: number,
     file: Express.Multer.File,
-  ): Promise<EventResponseDTO> {
-    if (!file) {
-      throw new BadRequestException('No file provided');
-    }
+  ): Promise<EventEntity> {
+    if (!file) throw new BadRequestException('No file provided');
 
     const event = await this.eventsRepo.findOne({ where: { id } });
-    if (!event) {
-      throw new NotFoundException(`Event with ID ${id} not found`);
-    }
+    if (!event) throw new NotFoundException(`Event with ID ${id} not found`);
 
     try {
-      // Upload to Cloudinary
       const result = await this.cloudinaryService.uploadImage(file, 'events');
-
-      // Update event with Cloudinary URL and public_id
       event.imageUrl = result.secure_url;
       event.imagePublicId = result.public_id;
-
       return await this.eventsRepo.save(event);
     } catch (error) {
       throw new BadRequestException(`Image upload failed: ${error.message}`);
@@ -145,34 +138,19 @@ export class EventsService {
   async updateEventImage(
     id: number,
     file: Express.Multer.File,
-  ): Promise<EventResponseDTO> {
-    if (!file) {
-      throw new BadRequestException('No file provided');
-    }
+  ): Promise<EventEntity> {
+    if (!file) throw new BadRequestException('No file provided');
 
     const event = await this.eventsRepo.findOne({ where: { id } });
-    if (!event) {
-      throw new NotFoundException(`Event with ID ${id} not found`);
-    }
+    if (!event) throw new NotFoundException(`Event with ID ${id} not found`);
 
     try {
-      let result;
-
-      // If event has existing image, update it; otherwise upload new
       if (event.imagePublicId) {
-        result = await this.cloudinaryService.updateImage(
-          event.imagePublicId,
-          file,
-          'events',
-        );
-      } else {
-        result = await this.cloudinaryService.uploadImage(file, 'events');
+        await this.cloudinaryService.deleteImage(event.imagePublicId);
       }
-
-      // Update event with new Cloudinary URL and public_id
+      const result = await this.cloudinaryService.uploadImage(file, 'events');
       event.imageUrl = result.secure_url;
       event.imagePublicId = result.public_id;
-
       return await this.eventsRepo.save(event);
     } catch (error) {
       throw new BadRequestException(`Image update failed: ${error.message}`);
@@ -223,16 +201,16 @@ export class EventsService {
     await this.eventsRepo.delete(id);
   }
 
-  async testCloudinaryConnection(): Promise<string> {
-    const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-    console.log('Environment variables check:');
-    console.log('CLOUDINARY_CLOUD_NAME:', cloudName);
-    console.log('CLOUDINARY_API_KEY:', process.env.CLOUDINARY_API_KEY);
-    console.log(
-      'CLOUDINARY_API_SECRET:',
-      process.env.CLOUDINARY_API_SECRET ? '***set***' : 'NOT SET',
-    );
+  // async testCloudinaryConnection(): Promise<string> {
+  //   const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+  //   console.log('Environment variables check:');
+  //   console.log('CLOUDINARY_CLOUD_NAME:', cloudName);
+  //   console.log('CLOUDINARY_API_KEY:', process.env.CLOUDINARY_API_KEY);
+  //   console.log(
+  //     'CLOUDINARY_API_SECRET:',
+  //     process.env.CLOUDINARY_API_SECRET ? '***set***' : 'NOT SET',
+  //   );
 
-    return cloudName;
-  }
+  //   return cloudName;
+  // }
 }
