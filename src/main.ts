@@ -12,7 +12,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:3000', // for local dev
-      // 'https://your-frontend.vercel.app' // replace this with your actual Vercel domain
+      'event-buddy-frontend-8ngj.vercel.app', // replace this with your actual Vercel domain
     ],
     // origin: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
