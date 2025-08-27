@@ -13,6 +13,7 @@ async function bootstrap() {
     origin: [
       'http://localhost:3000', // for local dev
       'https://event-buddy-frontend-8ngj.vercel.app', // replace this with your actual Vercel domain
+      'https://event-buddy-bd.vercel.app',
     ],
     // origin: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
