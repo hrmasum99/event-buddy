@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Query, Req, UseGuards } from "@nestjs/common";
 import { BookingsService } from "./bookings.service";
 import { BookingResponseDTO } from "./dto/booking-response.dto";
 import { JwtAuthGuard } from "src/common/guards/jwt-auth.guard";
@@ -8,6 +8,8 @@ import { Role } from "src/common/enums/role.enum";
 import { GetUser } from "src/common/decorators/get-user.decorator";
 import { CreateBookingDTO } from "./dto/create-booking.dto";
 import { ApiBadRequestResponse, ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import { PaginationDto } from "src/common/dto/pagination.dto";
+import { PaginationResponseDto } from "src/common/dto/pagination-response.dto";
 
 @ApiTags('Bookings')
 @Controller('bookings')
@@ -25,9 +27,12 @@ export class BookingsController {
   @Roles(Role.User)
   @Get('/my-bookings')
   @ApiBearerAuth()
-  @ApiOkResponse({ description: 'List of user bookings', type: [BookingResponseDTO] })
-  async findAll(@GetUser() user: any): Promise<BookingResponseDTO[]> {
-    return this.bookingsService.findAll(user.id);
+  @ApiOkResponse({ description: 'List of user bookings', type: PaginationResponseDto })
+  async findAll(
+    @GetUser() user: any,
+    @Query() paginationDto: PaginationDto,
+  ): Promise<PaginationResponseDto<BookingResponseDTO>> {
+    return this.bookingsService.findAll(user.id, paginationDto);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

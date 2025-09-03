@@ -6,7 +6,7 @@ import { SuccessResponseInterceptor } from './interceptors/response.interceptor'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
   // Global Success Response Interceptor
   app.useGlobalInterceptors(new SuccessResponseInterceptor());
   app.enableCors({

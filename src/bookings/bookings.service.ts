@@ -6,6 +6,8 @@ import { BookingResponseDTO } from "./dto/booking-response.dto";
 import { User } from "src/users/users.entity";
 import { EventEntity } from "src/events/events.entity";
 import { CreateBookingDTO } from "./dto/create-booking.dto";
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginationResponseDto } from 'src/common/dto/pagination-response.dto';
 
 @Injectable()
 export class BookingsService {
@@ -18,10 +20,24 @@ export class BookingsService {
     private eventsRepo: Repository<EventEntity>,
   ) {}
 
-  async findAll(id: number): Promise<BookingResponseDTO[]> {
-    return await this.bookingsRepo.find({ 
-      where: { user: {id: id} },
-      relations: ['user', 'event'] });
+  async findAll(id: number, paginationDto: PaginationDto): Promise<PaginationResponseDto<BookingResponseDTO>> {
+    const { page, limit } = paginationDto;
+    const [result, total] = await this.bookingsRepo.findAndCount({
+      where: { user: { id: id } },
+      relations: ['user', 'event'],
+      take: limit,
+      skip: (page - 1) * limit,
+    });
+
+    return {
+      data: result,
+      meta: {
+        page,
+        limit,
+        total_items: total,
+        total_pages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async getAvailableSeats(id: number): Promise<number> {

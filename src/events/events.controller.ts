@@ -3,6 +3,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Query,
   Redirect,
   Res,
   UseGuards,
@@ -22,6 +23,8 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginationResponseDto } from 'src/common/dto/pagination-response.dto';
 
 @ApiTags('Events')
 @Controller('events')
@@ -34,28 +37,28 @@ export class EventsController {
   @ApiBearerAuth()
   @ApiOkResponse({
     description: 'List of all events',
-    type: [EventResponseDTO],
+    type: PaginationResponseDto,
   })
-  findAll(): Promise<EventResponseDTO[]> {
-    return this.eventsService.findAll();
+  findAll(@Query() paginationDto: PaginationDto): Promise<PaginationResponseDto<EventResponseDTO>> {
+    return this.eventsService.findAll(paginationDto);
   }
 
   @Get('/upcoming')
   @ApiOkResponse({
     description: 'Upcoming events list',
-    type: [EventResponseDTO],
+    type: PaginationResponseDto,
   })
-  getUpcomingEvents(): Promise<EventResponseDTO[]> {
-    return this.eventsService.getUpcomingEvents();
+  getUpcomingEvents(@Query() paginationDto: PaginationDto): Promise<PaginationResponseDto<EventResponseDTO>> {
+    return this.eventsService.getUpcomingEvents(paginationDto);
   }
 
   @Get('/previous')
   @ApiOkResponse({
     description: 'Previous events list',
-    type: [EventResponseDTO],
+    type: PaginationResponseDto,
   })
-  getPreviousEvents(): Promise<EventResponseDTO[]> {
-    return this.eventsService.getPreviousEvents();
+  getPreviousEvents(@Query() paginationDto: PaginationDto): Promise<PaginationResponseDto<EventResponseDTO>> {
+    return this.eventsService.getPreviousEvents(paginationDto);
   }
 
   @Get('/:id')

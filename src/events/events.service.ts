@@ -10,6 +10,8 @@ import { EventEntity } from './events.entity';
 import { EventResponseDTO } from './dto/event-response.dto';
 import { UpdateEventDTO, UploadImageDTO } from './dto/update-event.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginationResponseDto } from 'src/common/dto/pagination-response.dto';
 
 @Injectable()
 export class EventsService {
@@ -20,32 +22,72 @@ export class EventsService {
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
-  async findAll(): Promise<EventResponseDTO[]> {
-    return this.eventsRepo.find();
+  async findAll(paginationDto: PaginationDto): Promise<PaginationResponseDto<EventResponseDTO>> {
+    const { page, limit } = paginationDto;
+    const [result, total] = await this.eventsRepo.findAndCount({
+      take: limit,
+      skip: (page - 1) * limit,
+    });
+
+    return {
+      data: result,
+      meta: {
+        page,
+        limit,
+        total_items: total,
+        total_pages: Math.ceil(total / limit),
+      },
+    };
   }
 
-  async getUpcomingEvents(): Promise<EventResponseDTO[]> {
+  async getUpcomingEvents(paginationDto: PaginationDto): Promise<PaginationResponseDto<EventResponseDTO>> {
+    const { page, limit } = paginationDto;
     const now = new Date();
-    return this.eventsRepo.find({
+    const [result, total] = await this.eventsRepo.findAndCount({
       where: {
         date: MoreThan(now),
       },
       order: {
         date: 'ASC',
       },
+      take: limit,
+      skip: (page - 1) * limit,
     });
+
+    return {
+      data: result,
+      meta: {
+        page,
+        limit,
+        total_items: total,
+        total_pages: Math.ceil(total / limit),
+      },
+    };
   }
 
-  async getPreviousEvents(): Promise<EventResponseDTO[]> {
+  async getPreviousEvents(paginationDto: PaginationDto): Promise<PaginationResponseDto<EventResponseDTO>> {
+    const { page, limit } = paginationDto;
     const now = new Date();
-    return this.eventsRepo.find({
+    const [result, total] = await this.eventsRepo.findAndCount({
       where: {
         date: LessThan(now),
       },
       order: {
         date: 'DESC',
       },
+      take: limit,
+      skip: (page - 1) * limit,
     });
+
+    return {
+      data: result,
+      meta: {
+        page,
+        limit,
+        total_items: total,
+        total_pages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async getEvent(id: number): Promise<EventResponseDTO> {
@@ -200,17 +242,4 @@ export class EventsService {
     }
     await this.eventsRepo.delete(id);
   }
-
-  // async testCloudinaryConnection(): Promise<string> {
-  //   const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-  //   console.log('Environment variables check:');
-  //   console.log('CLOUDINARY_CLOUD_NAME:', cloudName);
-  //   console.log('CLOUDINARY_API_KEY:', process.env.CLOUDINARY_API_KEY);
-  //   console.log(
-  //     'CLOUDINARY_API_SECRET:',
-  //     process.env.CLOUDINARY_API_SECRET ? '***set***' : 'NOT SET',
-  //   );
-
-  //   return cloudName;
-  // }
 }
