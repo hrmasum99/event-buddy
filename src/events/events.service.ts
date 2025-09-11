@@ -6,12 +6,16 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThan, LessThan, Repository } from 'typeorm';
 import { CreateEventDTO } from './dto/create-event.dto';
-import { EventEntity } from './events.entity';
+import { EventEntity } from './entities/events.entity';
 import { EventResponseDTO } from './dto/event-response.dto';
 import { UpdateEventDTO, UploadImageDTO } from './dto/update-event.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PaginationResponseDto } from 'src/common/dto/pagination-response.dto';
+import { CreateCouponDTO } from './dto/create-coupon.dto';
+import { CouponResponseDTO } from './dto/coupon-response.dto';
+import { Coupon } from './entities/coupon.entity';
+import { Booking } from 'src/bookings/entities/bookings.entity';
 
 @Injectable()
 export class EventsService {
@@ -19,10 +23,14 @@ export class EventsService {
     @InjectRepository(EventEntity)
     // private readonly eventsRepo: Repository<EventResponseDTO>,
     private readonly eventsRepo: Repository<EventEntity>,
+    @InjectRepository(Coupon)
+    private readonly couponsRepo: Repository<Coupon>,
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
-  async findAll(paginationDto: PaginationDto): Promise<PaginationResponseDto<EventResponseDTO>> {
+  async findAll(
+    paginationDto: PaginationDto,
+  ): Promise<PaginationResponseDto<EventResponseDTO>> {
     const { page, limit } = paginationDto;
     const [result, total] = await this.eventsRepo.findAndCount({
       take: limit,
@@ -40,7 +48,9 @@ export class EventsService {
     };
   }
 
-  async getUpcomingEvents(paginationDto: PaginationDto): Promise<PaginationResponseDto<EventResponseDTO>> {
+  async getUpcomingEvents(
+    paginationDto: PaginationDto,
+  ): Promise<PaginationResponseDto<EventResponseDTO>> {
     const { page, limit } = paginationDto;
     const now = new Date();
     const [result, total] = await this.eventsRepo.findAndCount({
@@ -65,7 +75,9 @@ export class EventsService {
     };
   }
 
-  async getPreviousEvents(paginationDto: PaginationDto): Promise<PaginationResponseDto<EventResponseDTO>> {
+  async getPreviousEvents(
+    paginationDto: PaginationDto,
+  ): Promise<PaginationResponseDto<EventResponseDTO>> {
     const { page, limit } = paginationDto;
     const now = new Date();
     const [result, total] = await this.eventsRepo.findAndCount({
@@ -230,10 +242,19 @@ export class EventsService {
 
   async getMyEvents(userId: number): Promise<EventResponseDTO[]> {
     return this.eventsRepo.find({
-      where: { id: userId },
-      relations: ['user'],
+      where: { createdBy: { id: userId } }, // use createdBy
+      relations: ['createdBy'], // match relation name
     });
   }
+
+  // async getMyEvents(userId: number): Promise<EventResponseDTO[]> {
+  //   const bookings = await this.bookingRepo.find({
+  //     where: { user: { id: userId } },
+  //     relations: ['event'],
+  //   });
+
+  //   return bookings.map((b) => b.event);
+  // }
 
   async deleteEvent(id: number): Promise<void> {
     const event = await this.eventsRepo.findOne({ where: { id } });
@@ -241,5 +262,55 @@ export class EventsService {
       throw new NotFoundException(`Event ID:${id} not found`);
     }
     await this.eventsRepo.delete(id);
+  }
+
+  // Coupon
+
+  async createCoupon(couponData: CreateCouponDTO): Promise<CouponResponseDTO> {
+    const couponCode = await this.couponsRepo.findOne({
+      where: { code: couponData.code },
+    });
+
+    if (couponCode) {
+      throw new BadRequestException('This coupon already exists!');
+    }
+
+    const coupon = this.couponsRepo.create({
+      ...couponData,
+    });
+
+    return await this.couponsRepo.save(coupon);
+  }
+
+  async getCoupon(id: number): Promise<CouponResponseDTO> {
+    return await this.couponsRepo.findOneBy({ id: id });
+  }
+
+  async findAllCoupon(
+    paginationDto: PaginationDto,
+  ): Promise<PaginationResponseDto<CouponResponseDTO>> {
+    const { page, limit } = paginationDto;
+    const [result, total] = await this.couponsRepo.findAndCount({
+      take: limit,
+      skip: (page - 1) * limit,
+    });
+
+    return {
+      data: result,
+      meta: {
+        page,
+        limit,
+        total_items: total,
+        total_pages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  async deleteCoupon(id: number): Promise<void> {
+    const coupon = await this.couponsRepo.findOne({ where: { id } });
+    if (!coupon) {
+      throw new NotFoundException(`Coupon ID:${id} not found`);
+    }
+    await this.couponsRepo.delete(id);
   }
 }

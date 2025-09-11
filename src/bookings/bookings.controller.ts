@@ -1,15 +1,33 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, Req, UseGuards } from "@nestjs/common";
-import { BookingsService } from "./bookings.service";
-import { BookingResponseDTO } from "./dto/booking-response.dto";
-import { JwtAuthGuard } from "src/common/guards/jwt-auth.guard";
-import { RolesGuard } from "src/common/guards/roles.guard";
-import { Roles } from "src/common/decorators/roles.decorators";
-import { Role } from "src/common/enums/role.enum";
-import { GetUser } from "src/common/decorators/get-user.decorator";
-import { CreateBookingDTO } from "./dto/create-booking.dto";
-import { ApiBadRequestResponse, ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from "@nestjs/swagger";
-import { PaginationDto } from "src/common/dto/pagination.dto";
-import { PaginationResponseDto } from "src/common/dto/pagination-response.dto";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import { BookingsService } from './bookings.service';
+import { BookingResponseDTO } from './dto/booking-response.dto';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Roles } from 'src/common/decorators/roles.decorators';
+import { Role } from 'src/common/enums/role.enum';
+import { GetUser } from 'src/common/decorators/get-user.decorator';
+import { CreateBookingDTO } from './dto/create-booking.dto';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginationResponseDto } from 'src/common/dto/pagination-response.dto';
+import { UserResponseDTO } from 'src/users/dto/user-response.dto';
+import { CancelBookingDto } from './dto/cancel-booking.dto';
 
 @ApiTags('Bookings')
 @Controller('bookings')
@@ -18,18 +36,23 @@ export class BookingsController {
 
   @Get('/available-seats/:id')
   @ApiOkResponse({ description: 'Number of available seats returned' })
-  async getAvailableSeats(@Param('id') id: number): Promise<{ availableSeats: number }> {
+  async getAvailableSeats(
+    @Param('id') id: number,
+  ): Promise<{ availableSeats: number }> {
     const availableSeats = await this.bookingsService.getAvailableSeats(id);
-    return {availableSeats};
+    return { availableSeats };
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.User)
   @Get('/my-bookings')
   @ApiBearerAuth()
-  @ApiOkResponse({ description: 'List of user bookings', type: PaginationResponseDto })
+  @ApiOkResponse({
+    description: 'List of user bookings',
+    type: PaginationResponseDto,
+  })
   async findAll(
-    @GetUser() user: any,
+    @GetUser() user: UserResponseDTO,
     @Query() paginationDto: PaginationDto,
   ): Promise<PaginationResponseDto<BookingResponseDTO>> {
     return this.bookingsService.findAll(user.id, paginationDto);
@@ -39,14 +62,17 @@ export class BookingsController {
   @Roles(Role.User)
   @Post('/new-booking/:eventId')
   @ApiBearerAuth()
-  @ApiCreatedResponse({ description: 'Booking created successfully', type: BookingResponseDTO })
+  @ApiCreatedResponse({
+    description: 'Booking created successfully (PENDING status)',
+    type: BookingResponseDTO,
+  })
   @ApiBadRequestResponse({ description: 'Booking failed' })
   async newBooking(
     @Param('eventId') eventId: number,
-    @Body() seatsBooked: CreateBookingDTO,
-    @GetUser() user: any
+    @Body() dto: CreateBookingDTO,
+    @GetUser() user: UserResponseDTO,
   ): Promise<BookingResponseDTO> {
-    return this.bookingsService.newBooking(user.id, eventId, seatsBooked);
+    return this.bookingsService.newBooking(user.id, eventId, dto);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -54,7 +80,10 @@ export class BookingsController {
   @Delete('/cancel-booking/:id')
   @ApiBearerAuth()
   @ApiOkResponse({ description: 'Booking cancelled successfully' })
-  async cancelBooking(@Param('id') id: number): Promise<void> {
-    return this.bookingsService.cancelBooking(id);
+  async cancelBooking(
+    @Param('id') id: number,
+    @Body() cancelBookingDto: CancelBookingDto, // 👈 add reason
+  ) {
+    return this.bookingsService.cancelBooking(id, cancelBookingDto.reason);
   }
 }

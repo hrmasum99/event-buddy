@@ -8,6 +8,10 @@ import { UsersModule } from './users/users.module';
 import { EventsModule } from './events/events.module';
 import { BookingsModule } from './bookings/bookings.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { PaymentsModule } from './payments/payments.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { DocumentsModule } from './documents/documents.module';
+import { RefundsModule } from './refunds/refunds.module';
 
 @Module({
   imports: [
@@ -27,11 +31,25 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
         rejectUnauthorized: false,
       },
     }),
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: {
+          user: process.env.EMAIL_USER, // your gmail
+          pass: process.env.EMAIL_PASS, // app password
+        },
+      },
+    }),
     AuthModule,
     UsersModule,
     EventsModule,
     BookingsModule,
     CloudinaryModule,
+    PaymentsModule,
+    DocumentsModule,
+    RefundsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

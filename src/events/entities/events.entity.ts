@@ -1,6 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Booking } from 'src/bookings/bookings.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Booking } from 'src/bookings/entities/bookings.entity';
+import { Ticket } from 'src/documents/entities/tickets.entity';
+import { Payment } from 'src/payments/entities/payment.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  ManyToOne,
+} from 'typeorm';
+import { Coupon } from './coupon.entity';
+import { User } from 'src/users/users.entity';
+// import { TicketType } from './ticket-type.entity';
 
 @Entity('events')
 export class EventEntity {
@@ -47,10 +58,6 @@ export class EventEntity {
   @Column()
   tags: string;
 
-  // @ApiProperty({ description: 'Filename of the event image', example: '1694352486event.png' })
-  // @Column({ type: 'varchar', name: 'Photo', default: 'N/A' })
-  // file: string;
-
   // Store Cloudinary URL instead of filename
   @ApiProperty({ description: 'Store Cloudinary URL', example: '' })
   @Column({ nullable: true })
@@ -64,6 +71,37 @@ export class EventEntity {
   @Column({ nullable: true })
   imagePublicId: string;
 
+  @ApiProperty({
+    description: 'Ticket unit price',
+    example: '250',
+  })
+  @Column({ nullable: true, type: 'numeric', precision: 14, scale: 2 })
+  ticketPrice: string;
+
+  @ApiProperty({
+    description: 'Store total revenue from selling the tickets',
+    example: '10000',
+  })
+  @Column({ type: 'numeric', precision: 14, scale: 2, default: 0 })
+  totalRevenue: string; // keep as string when using numeric
+
+  @Column({ nullable: true })
+  twoFASecret?: string;
+
   @OneToMany(() => Booking, (booking) => booking.event)
   bookings: Booking[];
+
+  @OneToMany(() => Payment, (p) => p.event)
+  payments: Payment[];
+
+  @OneToMany(() => Ticket, (ticket) => ticket.event)
+  tickets: Ticket[];
+
+  @OneToMany(() => Coupon, (coupon) => coupon.event)
+  coupons: Coupon[];
+
+  @ManyToOne(() => User, (user) => user.createdEvents, {
+    onDelete: 'CASCADE',
+  })
+  createdBy: User;
 }

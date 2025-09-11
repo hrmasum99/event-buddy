@@ -16,3 +16,21 @@ export class UserResponseDTO {
   })
   role: string;
 }
+
+export class PassResponseDTO {
+  @ApiProperty({ example: 1 })
+  id: number;
+
+  @ApiProperty({ example: 'user@example.com' })
+  email: string;
+
+  @ApiProperty({ example: 'User#123' })
+  password: string;
+
+  @ApiProperty({ example: '' })
+  twoFactorSecret?: string;
+  isTwoFactorEnabled?: boolean;
+
+  fullname?: string;
+  role?: string;
+}

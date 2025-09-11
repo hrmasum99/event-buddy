@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { v2 as cloudinary } from 'cloudinary';
+import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
 import { ConfigService } from '@nestjs/config';
 import { Readable } from 'stream';
+import * as streamifier from 'streamifier';
 
 @Injectable()
 export class CloudinaryService {
@@ -70,6 +71,34 @@ export class CloudinaryService {
 
       const stream = Readable.from(file.buffer);
       stream.pipe(uploadStream);
+    });
+  }
+
+  async uploadBuffer(
+    fileBuffer: Buffer,
+    folder: string = 'documents',
+    publicId?: string,
+    resourceType: 'raw' | 'auto' = 'raw', // force raw by default
+  ): Promise<UploadApiResponse> {
+    return new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder,
+          public_id: publicId,
+          resource_type: resourceType ?? 'raw', // ✅ default raw
+          overwrite: true,
+          format: 'pdf', // ✅ force Cloudinary to store as PDF
+        },
+        (error, result) => {
+          if (error) {
+            console.error('Cloudinary upload error:', error);
+            return reject(error);
+          }
+          console.log('Cloudinary upload success:', result.public_id);
+          resolve(result);
+        },
+      );
+      streamifier.createReadStream(fileBuffer).pipe(uploadStream);
     });
   }
 }

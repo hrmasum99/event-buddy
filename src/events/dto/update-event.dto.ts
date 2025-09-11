@@ -41,6 +41,14 @@ export class UpdateEventDTO {
   @IsString({ message: 'Tags must be a comma-separated string' })
   @IsNotEmpty({ message: 'Tags are required' })
   tags?: string;
+
+  @ApiPropertyOptional({
+    example: '1500',
+    description: 'Ticket price for the event',
+  })
+  @IsNotEmpty({ message: 'Ticket price is required' })
+  @IsString({ message: 'Ticket price must be a string' })
+  ticketPrice?: string;
 }
 
 export class UploadImageDTO {
