@@ -170,8 +170,22 @@ export class AuthService {
       throw new UnauthorizedException('Invalid 2FA code');
     }
 
-    // nothing else to save, already enabled at setup
-    return { success: true, message: '2FA verified successfully' };
+    const payload = {
+      sub: user.id,
+      fullname: user.fullname,
+      email: user.email,
+      role: user.role,
+    };
+    return {
+      success: true,
+      message: 'Login successful',
+      data: {
+        access_token: this.jwtService.sign(payload),
+      },
+    };
+
+    // // nothing else to save, already enabled at setup
+    // return { success: true, message: '2FA verified successfully' };
   }
 
   logout(token: string) {

@@ -29,6 +29,7 @@ import { ResetPasswordDTO } from './dto/reset-password.dto';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { User } from 'src/users/users.entity';
 import { Enable2FADTO } from './dto/enable-2fa.dto';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -83,6 +84,7 @@ export class AuthController {
     return await this.authService.resetPassword(dto.email, dto.newPassword);
   }
 
+  // @UseGuards(JwtAuthGuard, RolesGuard)
   @UseGuards(JwtAuthGuard)
   @Put('change-password')
   @ApiOperation({
@@ -100,6 +102,7 @@ export class AuthController {
     );
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('2fa/setup')
   @ApiOperation({ summary: 'Enable 2FA and get QR Code' })
   async setup2FA(@Body() body: { email: string }) {
