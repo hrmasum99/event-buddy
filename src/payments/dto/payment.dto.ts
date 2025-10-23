@@ -10,6 +10,11 @@ import {
 } from 'class-validator';
 
 export class InitiatePaymentDTO {
+  @ApiProperty({ example: 123 })
+  @IsInt()
+  @Min(1)
+  bookingId: number;
+
   @ApiProperty()
   @IsInt()
   @Min(1)

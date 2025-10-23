@@ -11,4 +11,8 @@ export class BookingResponseDTO {
   unitPrice: string;
   totalPaid: string;
   createdAt: Date;
+  couponCode?: string;
+  couponDiscount?: number;
+  userId?: number;
+  eventId?: number;
 }

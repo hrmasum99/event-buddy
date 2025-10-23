@@ -39,6 +39,13 @@ export class Payment {
   bookings: Booking[];
 
   @ApiProperty({
+    description: 'Booking Id',
+    example: '123',
+  })
+  @Column({ nullable: true })
+  bookingId: number;
+
+  @ApiProperty({
     description: 'Title of the event',
     example: 'Tech Conference 2025',
   })

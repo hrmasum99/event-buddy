@@ -15,6 +15,8 @@ export class UserResponseDTO {
     description: 'Role of the user (admin/user)',
   })
   role: string;
+  @ApiProperty({ example: '' })
+  isTwoFactorEnabled?: boolean;
 }
 
 export class PassResponseDTO {

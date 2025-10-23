@@ -25,7 +25,10 @@ export class UsersService {
   }
 
   async findByEmail(email: string): Promise<UserResponseDTO> {
-    return this.userRepo.findOne({ where: { email } });
+    return this.userRepo.findOne({
+      where: { email },
+      select: ['id', 'fullname', 'email', 'role', 'isTwoFactorEnabled'],
+    });
   }
 
   async findByIdForPass(userId: number): Promise<PassResponseDTO> {

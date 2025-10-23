@@ -30,6 +30,8 @@ import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { User } from 'src/users/users.entity';
 import { Enable2FADTO } from './dto/enable-2fa.dto';
 import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Disable2FADTO } from './dto/disable-2fa.dto';
+import { Verify2FADTO } from './dto/verify-2fa.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -105,13 +107,20 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('2fa/setup')
   @ApiOperation({ summary: 'Enable 2FA and get QR Code' })
-  async setup2FA(@Body() body: { email: string }) {
-    return this.authService.generate2FASecret(body.email);
+  async enable2FA(@Body() dto: Enable2FADTO) {
+    return this.authService.generate2FASecret(dto.email, dto.password);
   }
 
   @Post('2fa/verify')
   @ApiOperation({ summary: 'Verify OTP code and confirm 2FA setup' })
-  async verify2FA(@Body() dto: Enable2FADTO & { email: string }) {
+  async verify2FA(@Body() dto: Verify2FADTO & { email: string }) {
     return this.authService.verifyTwoFactorCode(dto.email, dto.code);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('2fa/disable')
+  @ApiOperation({ summary: 'Disable Two-Factor Authentication' })
+  async disable2FA(@Body() dto: Disable2FADTO) {
+    return this.authService.disable2FA(dto.email, dto.password);
   }
 }

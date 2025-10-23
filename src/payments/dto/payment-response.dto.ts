@@ -6,22 +6,22 @@ export class PaymentResponseDTO {
   id: number;
 
   @ApiProperty()
-  userId: number;
+  userId?: number;
 
   @ApiProperty()
-  userFullName: string;
+  userFullName?: string;
 
   @ApiProperty()
-  userEmail: string;
+  userEmail?: string;
 
   @ApiProperty()
   tranId: string;
 
   @ApiProperty()
-  eventId: number;
+  eventId?: number;
 
   @ApiProperty()
-  eventTitle: string;
+  eventTitle?: string;
 
   @ApiProperty()
   amount: string;

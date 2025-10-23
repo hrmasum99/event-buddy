@@ -21,6 +21,7 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -41,6 +42,14 @@ export class BookingsController {
   ): Promise<{ availableSeats: number }> {
     const availableSeats = await this.bookingsService.getAvailableSeats(id);
     return { availableSeats };
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get('/get-booking/:id')
+  @ApiOkResponse({ description: 'Get booking by ID', type: BookingResponseDTO })
+  @ApiNotFoundResponse({ description: 'Booking not found' })
+  getBookingById(@Param('id') id: number): Promise<BookingResponseDTO> {
+    return this.bookingsService.getBookingById(id);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

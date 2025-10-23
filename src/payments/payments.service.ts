@@ -159,6 +159,7 @@ export class PaymentsService {
 
     // Save INITIATED payment (so we can find it on success)
     const payment = this.paymentRepo.create({
+      bookingId: booking.id,
       event: booking.event,
       user: booking.user,
       eventTitle: booking.eventTitle,
@@ -182,14 +183,14 @@ export class PaymentsService {
       tran_id: tranId,
       success_url:
         process.env.PAYMENT_SUCCESS_URL ||
-        'http://localhost:7000/Payments/success',
+        'http://localhost:7000/payments/success',
       fail_url:
-        process.env.PAYMENT_FAIL_URL || 'http://localhost:7000/Payments/fail',
+        process.env.PAYMENT_FAIL_URL || 'http://localhost:7000/payments/fail',
       cancel_url:
         process.env.PAYMENT_CANCEL_URL ||
-        'http://localhost:7000/Payments/cancel',
+        'http://localhost:7000/payments/cancel',
       ipn_url:
-        process.env.PAYMENT_IPN_URL || 'http://localhost:7000/Payments/ipn',
+        process.env.PAYMENT_IPN_URL || 'http://localhost:7000/payments/ipn',
 
       shipping_method: 'N/A',
       product_name: `${booking.event.title} x${booking.quantity}`,
@@ -252,11 +253,8 @@ export class PaymentsService {
 
     // Find pending booking
     const booking = await this.bookingsRepo.findOne({
-      where: {
-        user: { id: payment.user.id },
-        event: { id: payment.event.id },
-        status: 'PENDING',
-      },
+      where: { id: payment.bookingId },
+      relations: ['user', 'event'],
     });
     if (!booking) throw new NotFoundException('Pending booking not found');
 
@@ -326,7 +324,7 @@ export class PaymentsService {
     });
 
     console.log(`name: ${payment.event.title},
-          qty: ${booking.seatsBooked},
+          qty: ${payment.quantity},
           total: ${payment.amount},
           price: ${payment.event.ticketPrice},`);
 
@@ -610,5 +608,23 @@ export class PaymentsService {
         total_pages: Math.ceil(total / limit),
       },
     };
+  }
+
+  async getPaymentById(id: number): Promise<PaymentResponseDTO> {
+    return await this.paymentRepo.findOneBy({ id: id });
+  }
+
+  async findByTranId(tranId: string) {
+    return this.paymentRepo.findOne({
+      where: { tranId },
+      relations: ['event', 'user'],
+    });
+  }
+
+  async findBookingByPayment(paymentId: number) {
+    return this.bookingsRepo.findOne({
+      where: { payment: { id: paymentId } },
+      relations: ['event', 'user'],
+    });
   }
 }

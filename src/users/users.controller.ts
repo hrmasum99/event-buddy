@@ -54,11 +54,20 @@ export class UserController {
     private readonly usersService: UsersService,
   ) {}
 
+  // @Get('/profile')
+  // // @ApiBearerAuth()
+  // @ApiOkResponse({ description: 'User profile returned', type: User })
+  // getUserProfile(@GetUser() user: UserResponseDTO) {
+  //   return user;
+  // }
+
   @Get('/profile')
-  // @ApiBearerAuth()
-  @ApiOkResponse({ description: 'User profile returned', type: User })
-  getUserProfile(@GetUser() user: User) {
-    return user;
+  @ApiOkResponse({
+    description: 'User profile returned',
+    type: UserResponseDTO,
+  })
+  async getUserProfile(@GetUser('email') email: string) {
+    return this.usersService.findByEmail(email); // ensures full DB record including 2FA field
   }
 
   @Roles(Role.Admin)

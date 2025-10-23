@@ -120,6 +120,7 @@ export class AuthService {
       fullname: user.fullname,
       email: user.email,
       role: user.role,
+      isTwoFactorEnabled: user.isTwoFactorEnabled,
     };
     return {
       message: 'Login successful',
@@ -132,9 +133,16 @@ export class AuthService {
   // 🔹 Login Step 2: Verify 2FA
   async generate2FASecret(
     email: string,
+    password: string,
   ): Promise<{ otpauthUrl: string; qrCode: string }> {
     const user = await this.usersService.findByEmailForPass(email);
     if (!user) throw new UnauthorizedException('User not found');
+
+    // Verify password before enabling 2FA
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid password');
+    }
 
     const secret = speakeasy.generateSecret({
       name: `EventBuddy (${user.email})`,
@@ -175,6 +183,7 @@ export class AuthService {
       fullname: user.fullname,
       email: user.email,
       role: user.role,
+      isTwoFactorEnabled: user.isTwoFactorEnabled,
     };
     return {
       success: true,
@@ -186,6 +195,34 @@ export class AuthService {
 
     // // nothing else to save, already enabled at setup
     // return { success: true, message: '2FA verified successfully' };
+  }
+
+  async disable2FA(email: string, password: string) {
+    const user = await this.usersService.findByEmailForPass(email);
+    if (!user) throw new UnauthorizedException('User not found');
+
+    // Verify password before disabling 2FA
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid password');
+    }
+
+    // Disable 2FA
+    user.twoFactorSecret = null;
+    user.isTwoFactorEnabled = false;
+
+    await this.usersService.updateUserPass(
+      user.id,
+      user.password,
+      user.twoFactorSecret,
+      user.isTwoFactorEnabled,
+    );
+
+    return {
+      success: true,
+      message: 'Two-Factor Authentication disabled successfully',
+      data: null,
+    };
   }
 
   logout(token: string) {

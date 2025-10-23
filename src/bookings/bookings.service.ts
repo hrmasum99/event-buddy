@@ -60,6 +60,7 @@ export class BookingsService {
       event: toEventResponseDTO(b.event),
       coupon: toCouponResponseDTO(b.coupon),
       payment: toPaymentResponseDTO(b.payment),
+      status: b.status,
       eventTitle: b.event.title,
       createdAt: b.createdAt,
       unitPrice: b.unitPrice,
@@ -77,6 +78,10 @@ export class BookingsService {
         total_pages: Math.ceil(total / limit),
       },
     };
+  }
+
+  async getBookingById(id: number): Promise<BookingResponseDTO> {
+    return await this.bookingsRepo.findOneBy({ id: id });
   }
 
   async getAvailableSeats(id: number): Promise<number> {
@@ -138,7 +143,7 @@ export class BookingsService {
 
     // ✅ Create booking with PENDING status
     const booking = this.bookingsRepo.create({
-      user,
+      user, // issue : show user password !!!
       event,
       eventTitle: event.title,
       quantity: dto.quantity,
