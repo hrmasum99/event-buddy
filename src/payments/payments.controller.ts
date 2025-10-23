@@ -113,7 +113,7 @@ export class PaymentsController {
       const tran_id = data.tran_id || data.tranId || result.tranId;
 
       if (tran_id) {
-        const frontendSuccessUrl = `http://localhost:3000/payments/success?tran_id=${encodeURIComponent(
+        const frontendSuccessUrl = `https://event-buddy-bd.vercel.app/payments/success?tran_id=${encodeURIComponent(
           tran_id,
         )}`;
         return res.redirect(frontendSuccessUrl);
@@ -151,8 +151,11 @@ export class PaymentsController {
   async paymentFail(@Query() query: any, @Res() res: Response) {
     const { tran_id } = query;
     // ✅ Redirect to frontend failure page
+    // return res.redirect(
+    //   `http://localhost:3000/payments/fail?tran_id=${tran_id}`,
+    // );
     return res.redirect(
-      `http://localhost:3000/payments/fail?tran_id=${tran_id}`,
+      `https://event-buddy-bd.vercel.app/payments/fail?tran_id=${tran_id}`,
     );
   }
 
@@ -161,7 +164,7 @@ export class PaymentsController {
     const { tran_id } = query;
     // Optional cancel page
     return res.redirect(
-      `http://localhost:3000/payments/cancel?tran_id=${tran_id}`,
+      `https://event-buddy-bd.vercel.app/payments/cancel?tran_id=${tran_id}`,
     );
   }
   // SSLCommerz will redirect here on cancel
