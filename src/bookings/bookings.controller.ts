@@ -91,7 +91,7 @@ export class BookingsController {
   @ApiOkResponse({ description: 'Booking cancelled successfully' })
   async cancelBooking(
     @Param('id') id: number,
-    @Body() cancelBookingDto: CancelBookingDto, // 👈 add reason
+    @Body() cancelBookingDto: CancelBookingDto,
   ) {
     return this.bookingsService.cancelBooking(id, cancelBookingDto.reason);
   }

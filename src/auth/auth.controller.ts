@@ -59,13 +59,13 @@ export class AuthController {
     return token;
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('logout')
-  @ApiOkResponse({ description: 'User logged out successfully' })
-  async logout(@Req() req: Request) {
-    const token = req.headers.authorization?.split(' ')[1];
-    return this.authService.logout(token);
-  }
+  // @UseGuards(JwtAuthGuard)
+  // @Post('logout')
+  // @ApiOkResponse({ description: 'User logged out successfully' })
+  // async logout(@Req() req: Request) {
+  //   const token = req.headers.authorization?.split(' ')[1];
+  //   return this.authService.logout(token);
+  // }
 
   @Post('forgot-password')
   @ApiOperation({ summary: 'Send OTP to email for password reset' })
