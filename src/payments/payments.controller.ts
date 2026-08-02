@@ -29,15 +29,18 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorators';
 import { Role } from 'src/common/enums/role.enum';
 import { PaginationResponseDto } from 'src/common/dto/pagination-response.dto';
-import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PaginationPaymentDto } from './dto/pagination-payment.dto';
 import { PaymentResponseDTO } from './dto/payment-response.dto';
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 
 @ApiTags('Payments')
 @Controller('payments')
 export class PaymentsController {
-  constructor(private readonly paymentsService: PaymentsService) {}
+  constructor(
+    private readonly paymentsService: PaymentsService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -47,153 +50,59 @@ export class PaymentsController {
   @ApiCreatedResponse({
     description: 'Booking initiated successfully',
     type: InitiatePaymentDTO,
-  }) // BookingResponseDTO
+  })
   @ApiBadRequestResponse({ description: 'Booking initiation failed' })
   @ApiOkResponse({ description: 'Returns Gateway URL and tranId' })
   async initiate(@GetUser() user: User, @Body() dto: InitiatePaymentDTO) {
     const { gatewayUrl, tranId } = await this.paymentsService.initiate(
-      dto.bookingId, // ✅ FIX: Use the bookingId from the DTO payload
+      dto.bookingId,
       dto,
     );
     return { message: 'Redirect to gateway', data: { gatewayUrl, tranId } };
   }
-  // async initiate(@GetUser() user: User, @Body() dto: InitiatePaymentDTO) {
-  //   const { gatewayUrl, tranId } = await this.paymentsService.initiate(
-  //     user.id,
-  //     dto,
-  //   );
-  //   return { message: 'Redirect to gateway', data: { gatewayUrl, tranId } };
-  // }
 
-  // Handle SSLCommerz redirect (user browser redirect)
-  // @Get('success')
-  // @ApiExcludeEndpoint()
-  // async successGet(@Query() query: any) {
-  //   const result = await this.paymentsService.onSuccess(query);
-  //   return { message: 'Payment success (GET)', data: result };
-  // }
-  @Get('on-success')
-  async paymentSuccess(@Query() query: any, @Res() res: Response) {
-    const { tran_id } = query;
-    // ✅ Redirect to frontend page with tran_id
-    return res.redirect(
-      `http://localhost:3000/payments/success?tran_id=${tran_id}`,
-    );
-  }
-
-  // Handle SSLCommerz server-to-server POST
-  // @Post('success')
-  // @ApiExcludeEndpoint()
-  // async successPost(@Body() body: any, @Query() query: any) {
-  //   const data = { ...query, ...body }; // merge both
-  //   const result = await this.paymentsService.onSuccess(data);
-  //   return { message: 'Payment success (POST)', data: result };
-  // }
-
+  // ✅ HANDLES SSLCOMMERZ POST SUCCESS REDIRECT
   @Post('success')
-  @ApiExcludeEndpoint()
-  async successPost(@Req() req: Request, @Res() res: Response) {
-    try {
-      // Fix: TypeScript doesn't know `req.query` is object, so cast it
-      const query = req.query as Record<string, any>;
-      const body = req.body as Record<string, any>;
-
-      // merge both
-      const data = { ...query, ...body };
-
-      // call service
-      const result: {
-        message: string;
-        tranId: string;
-        valId: string;
-        invoiceUrl: string;
-        ticketUrl: string;
-      } = await this.paymentsService.onSuccess(data);
-
-      const tran_id = data.tran_id || data.tranId || result.tranId;
-
-      if (tran_id) {
-        const frontendSuccessUrl = `https://event-buddy-bd.vercel.app/payments/success?tran_id=${encodeURIComponent(
-          tran_id,
-        )}`;
-        return res.redirect(frontendSuccessUrl);
-      }
-
-      return res.status(HttpStatus.OK).json({
-        message: 'Payment processed (POST)',
-        result,
-      });
-    } catch (err: any) {
-      console.error('Error in POST /payments/success:', err?.message || err);
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        message: err?.message || 'Payment processing failed',
-        error: true,
-      });
-    }
+  async handleSuccess(@Body() body: any, @Res() res: Response) {
+    const frontendUrl =
+      this.configService.get('FRONTEND_URL') ||
+      'https://event-buddy-bd.vercel.app';
+    await this.paymentsService.onSuccess(body);
+    return res.redirect(
+      `${frontendUrl}/payments/success?tran_id=${body.tran_id || ''}`,
+    );
   }
 
-  // // SSLCommerz will redirect here on success (GET with query params)
-  // @Post('success')
-  // async success(@Query() query: any) {
-  //   const result = await this.paymentsService.onSuccess(query);
-  //   return { message: 'Payment success', data: result };
-  // }
-
-  // SSLCommerz will redirect here on fail
+  // ✅ HANDLES SSLCOMMERZ POST FAIL REDIRECT
   @Post('fail')
-  @ApiExcludeEndpoint()
-  async fail(@Query() query: any) {
-    const result = await this.paymentsService.onFail(query);
-    return { message: 'Payment failed', data: result };
-  }
-
-  @Get('on-fail')
-  async paymentFail(@Query() query: any, @Res() res: Response) {
-    const { tran_id } = query;
-    // ✅ Redirect to frontend failure page
-    // return res.redirect(
-    //   `http://localhost:3000/payments/fail?tran_id=${tran_id}`,
-    // );
+  async handleFail(@Body() body: any, @Res() res: Response) {
+    const frontendUrl =
+      this.configService.get('FRONTEND_URL') ||
+      'https://event-buddy-bd.vercel.app';
+    await this.paymentsService.onFail(body);
     return res.redirect(
-      `https://event-buddy-bd.vercel.app/payments/fail?tran_id=${tran_id}`,
+      `${frontendUrl}/payments/fail?tran_id=${body.tran_id || ''}`,
     );
   }
 
-  @Get('on-cancel')
-  async paymentCancel(@Query() query: any, @Res() res: Response) {
-    const { tran_id } = query;
-    // Optional cancel page
-    return res.redirect(
-      `https://event-buddy-bd.vercel.app/payments/cancel?tran_id=${tran_id}`,
-    );
-  }
-  // SSLCommerz will redirect here on cancel
+  // ✅ HANDLES SSLCOMMERZ POST CANCEL REDIRECT
   @Post('cancel')
-  @ApiExcludeEndpoint()
-  async cancel(@Query() query: any) {
-    const result = await this.paymentsService.onCancel(query);
-    return { message: 'Payment cancelled', data: result };
+  async handleCancel(@Body() body: any, @Res() res: Response) {
+    const frontendUrl =
+      this.configService.get('FRONTEND_URL') ||
+      'https://event-buddy-bd.vercel.app';
+    await this.paymentsService.onCancel(body);
+    return res.redirect(
+      `${frontendUrl}/payments/fail?tran_id=${body.tran_id || ''}`,
+    );
   }
 
-  // SSLCommerz will post IPN notifications here
   @Post('ipn')
   @ApiExcludeEndpoint()
-  async ipn(@Req() req: any) {
-    const result = await this.paymentsService.onIpn(req.body);
+  async ipn(@Body() body: any) {
+    const result = await this.paymentsService.onIpn(body);
     return { message: 'IPN received', data: result };
   }
-
-  // Optional helpers
-  // @ApiBearerAuth()
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles(Role.User)
-  // @Get('query-tran')
-  // @ApiOperation({ summary: 'Query a transaction by its ID' })
-  // @ApiOkResponse({ description: 'Transaction details' })
-  // async queryByTran(@Query('tran_id') tran_id: string) {
-  //   const data = await this.paymentsService.queryByTranId(tran_id);
-  //   return { message: 'Transaction query', data };
-  // }
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -207,7 +116,6 @@ export class PaymentsController {
     description: 'Transaction details with event, user, and booking info',
   })
   async queryByTran(@Query('tran_id') tran_id: string) {
-    // 1️⃣ Query SSLCommerz API
     const sslResponse = await this.paymentsService.queryByTranId(tran_id);
 
     if (!sslResponse?.element?.[0]) {
@@ -218,7 +126,6 @@ export class PaymentsController {
       };
     }
 
-    // 2️⃣ Get your internal payment record
     const payment = await this.paymentsService.findByTranId(tran_id);
 
     if (!payment) {
@@ -229,10 +136,8 @@ export class PaymentsController {
       };
     }
 
-    // 3️⃣ Get related booking details
     const booking = await this.paymentsService.findBookingByPayment(payment.id);
 
-    // 4️⃣ Build structured response
     return {
       success: true,
       message: 'Transaction query successful',
